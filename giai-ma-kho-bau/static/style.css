@@ -1,0 +1,968 @@
+/* Thiết lập cơ bản cho HTML và Body */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: white;
+    font-family: 'Times New Roman', Times, serif,; /* Phông chữ mặc định dễ đọc */
+    overflow-x: hidden; /* Ngăn chặn thanh cuộn ngang */
+}
+
+body {
+    background-image: url('images/Dungeon_background.jpg'); /* Đảm bảo tên file chính xác */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed; /* Giữ ảnh nền cố định khi cuộn */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao viewport */
+    position: relative; /* Quan trọng cho nút settings ở góc */
+}
+
+/* Flash Messages */
+.flash-messages-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.flash-message {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    opacity: 0; /* Mặc định ẩn, sẽ được JS điều khiển */
+    animation: fadein 0.5s forwards; /* Animation khi xuất hiện */
+}
+
+.flash-message.auto-hide {
+    animation: fadein 0.5s forwards, fadeOut 0.5s 3s forwards; /* Auto hide after 3 seconds */
+}
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; display: none; /* Cuối cùng ẩn hoàn toàn */ }
+}
+
+.flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flash-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.flash-message.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.flash-message.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Các container chính của game */
+.game-container-wrapper { /* Đổi tên từ .game-container để tránh nhầm lẫn với #game-container của 2D game */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1300px; /* Tổng chiều rộng tối đa */
+}
+
+.game-content { /* Áp dụng cho các trang intro, select_level, game_complete */
+    background-color: rgba(0, 0, 0, 0.75); /* Hơi tối hơn một chút */
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px; /* Giới hạn cho các trang intro/select/complete */
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6); /* Hiệu ứng phát sáng mạnh hơn */
+    text-align: center;
+    margin: 20px auto; /* Canh giữa và có margin trên/dưới */
+}
+
+.game-title {
+    font-family: 'Times New Roman', serif;
+    font-size: 3.2rem; /* Lớn hơn một chút */
+    font-weight: 700;
+    color: #FFD700; /* Vàng Gold */
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.9);
+    margin-top: 0;
+    margin-bottom: 25px;
+    animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+p {
+    font-size: 1.15em; /* Kích thước chữ lớn hơn một chút */
+    line-height: 1.7;
+    margin-bottom: 20px;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text-yellow-400 {
+    color: #fbd38d; /* Vàng nhạt */
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+/* Main Buttons (Intro Page) */
+.main-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem; /* Tăng khoảng cách */
+    margin-top: 40px;
+}
+
+.main-button {
+    padding: 1.35rem 3.5rem; /* Lớn hơn */
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 1.6rem; /* Lớn hơn */
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4); /* Bóng đổ mạnh hơn */
+    position: relative;
+    overflow: hidden;
+    border: none; /* Đảm bảo không có border */
+}
+
+.main-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.35); /* Sáng hơn */
+    transform: skewX(-20deg);
+    transition: all 0.7s ease;
+}
+.main-button:hover::before {
+    left: 125%;
+}
+.main-button:active {
+    transform: translateY(3px); /* Nhấn sâu hơn */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.main-button.play {
+    background-color: #34D399; /* Xanh lá cây */
+}
+.main-button.play:hover {
+    background-color: #10B981;
+}
+
+/* Settings Button */
+.top-right-settings-button {
+    position: absolute;
+    top: 1.8rem; /* Cách top nhiều hơn */
+    right: 1.8rem; /* Cách right nhiều hơn */
+    z-index: 20;
+
+    background-color: rgba(0, 0, 0, 0.7); /* Tối hơn */
+    color: white;
+    padding: 0.85rem 1.45rem; /* Kích thước lớn hơn */
+    border-radius: 0.6rem; /* Bo tròn hơn */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Viền rõ hơn */
+    cursor: pointer;
+    font-size: 1.2rem; /* To hơn */
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+.top-right-settings-button:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+.top-right-settings-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Settings Modal */
+.settings-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Tối hơn */
+    z-index: 999; /* Đặt z-index cao hơn */
+    display: none;
+}
+
+.settings-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2a2a2a; /* Nền tối cho modal để phù hợp với theme game */
+    padding: 2.5rem; /* Padding lớn hơn */
+    border-radius: 1.2rem; /* Bo tròn hơn */
+    box-shadow: 0 10px 25px rgba(0, 255, 255, 0.7); /* Hiệu ứng sáng */
+    z-index: 1000; /* Đặt z-index cao hơn backdrop */
+    display: none;
+    flex-direction: column;
+    width: 90%;
+    max-width: 450px; /* Rộng hơn một chút */
+    color: #eee; /* Màu chữ sáng */
+}
+
+.settings-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #555; /* Viền tối hơn */
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.8rem;
+}
+
+.settings-modal-header h2 {
+    font-size: 2.2rem; /* To hơn */
+    font-weight: bold;
+    color: #FFD700; /* Vàng Gold */
+}
+
+.close-settings-button {
+    cursor: pointer;
+    font-size: 2.5rem; /* To hơn */
+    font-weight: bold;
+    color: #bbb; /* Màu xám sáng */
+    transition: color 0.2s ease;
+}
+
+.close-settings-button:hover {
+    color: #fff;
+}
+
+.settings-modal-body {
+    flex-grow: 1;
+    padding-bottom: 1.8rem;
+}
+
+.setting-item {
+    margin-bottom: 1.8rem; /* Khoảng cách lớn hơn */
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 0.8rem; /* Khoảng cách lớn hơn */
+    font-size: 1.2rem; /* To hơn */
+    color: #fbd38d; /* Vàng nhạt */
+}
+
+.setting-item input[type="range"],
+.setting-item select {
+    width: 100%;
+    padding: 0.85rem; /* Padding lớn hơn */
+    border: 1px solid #777; /* Viền tối hơn */
+    border-radius: 0.6rem;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+    background-color: #3e3e3e; /* Nền tối */
+    color: #eee;
+}
+
+/* Styles cho slider âm lượng */
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 2px solid #fff; /* Viền trắng cho thumb */
+    height: 28px; /* To hơn */
+    width: 28px; /* To hơn */
+    border-radius: 50%;
+    background: #4CAF50; /* Xanh lá */
+    cursor: pointer;
+    margin-top: -10px; /* Điều chỉnh lại vị trí */
+    box-shadow: 2px 2px 3px rgba(0,0,0,0.4);
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 10px; /* Dày hơn */
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    background: #555; /* Nền track tối hơn */
+    border-radius: 5px;
+    border: 0.5px solid #666;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #777;
+}
+
+.settings-modal-footer {
+    padding-top: 1.5rem;
+    text-align: right;
+}
+
+.save-settings-button {
+    background-color: #34D399;
+    color: white;
+    padding: 0.85rem 1.65rem; /* Lớn hơn */
+    border-radius: 0.6rem;
+    border: none;
+    font-size: 1.2rem; /* To hơn */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save-settings-button:hover {
+    background-color: #10B981;
+}
+
+/* Level Selection Page */
+.level-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px; /* Tăng khoảng cách giữa các level item */
+    margin-top: 40px;
+}
+
+.level-item {
+    background-color: rgba(255, 255, 255, 0.15); /* Hơi sáng hơn */
+    padding: 25px; /* Padding lớn hơn */
+    border-radius: 12px;
+    width: 220px; /* Rộng hơn */
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    border: 2px solid rgba(0, 255, 255, 0.6);
+    transition: all 0.3s ease; /* Thêm transition */
+    position: relative; /* Cho icon khóa */
+}
+
+.level-item:hover:not(.locked) {
+    transform: translateY(-5px); /* Hiệu ứng hover */
+    box-shadow: 0 8px 20px rgba(0, 255, 255, 0.8);
+}
+
+.level-item.locked {
+    opacity: 0.6; /* Hơi mờ hơn */
+    cursor: not-allowed;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Bóng đỏ cho khóa */
+    border-color: rgba(255, 0, 0, 0.7);
+}
+
+.level-item.locked .level-button {
+    background-color: #777; /* Nút màu xám khi khóa */
+    cursor: not-allowed;
+    pointer-events: none; /* Ngăn chặn sự kiện click */
+}
+
+.level-item.locked::before { /* Icon khóa */
+    content: '🔒';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2em;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+}
+
+.level-item.completed {
+    border-color: #4CAF50; /* Xanh lá cây */
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}
+
+.level-item.completed::before { /* Icon hoàn thành */
+    content: '✅';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2em;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+}
+
+.level-item h3 {
+    color: #ffd700;
+    margin-top: 0;
+    font-size: 1.6em; /* To hơn */
+    margin-bottom: 15px;
+}
+
+.level-button {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #007bff; /* Xanh dương */
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.level-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.level-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.reset-game-button {
+    background-color: #dc3545; /* Đỏ */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 30px;
+    transition: background-color 0.3s ease;
+}
+
+.reset-game-button:hover {
+    background-color: #c82333;
+}
+
+
+/* Game Play Screen (level_0X.html) */
+.game-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 1400px; /* Tổng chiều rộng tối đa cho màn chơi */
+    background-color: rgba(0, 0, 0, 0.8); /* Nền tối hơn cho game wrapper */
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
+    overflow: hidden;
+    margin: 20px auto;
+    flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
+}
+
+#game-container { /* Khu vực hiển thị 2D game */
+    width: 70%; /* Chiếm 70% chiều rộng của .game-wrapper */
+    height: 650px; /* Chiều cao cố định */
+    background-color: #000; /* Nền đen mặc định nếu không có ảnh */
+    position: relative;
+    border-right: 3px solid #555; /* Viền ngăn cách */
+    overflow: hidden; /* Quan trọng để các đối tượng không tràn ra ngoài */
+    /* background-image: url('../images/Dungeon_background.jpg');  KHÔNG DÙNG Ở ĐÂY, ĐÃ CÓ Ở BODY */
+    /* background-size: cover; */
+    /* background-position: center; */
+}
+
+.game-object {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom; /* Đảm bảo chân đối tượng ở đáy */
+    /* transition: all 0.1s linear; */ /* Transition cho di chuyển mượt mà hơn */
+}
+
+#player {
+    width: 80px; /* Kích thước nhân vật */
+    height: 80px;
+    background-image: url('../images/main_hero.jpg'); /* Đảm bảo tên file chính xác */
+    z-index: 10;
+}
+
+#enemy {
+    width: 100px; /* Kích thước quái vật */
+    height: 100px;
+    background-image: url('../images/Dungeon_monster.jpg'); /* Đảm bảo tên file chính xác */
+    z-index: 9;
+}
+
+.torch {
+    position: absolute;
+    bottom: 150px; /* Adjust vertical position */
+    left: 50px;    /* Adjust horizontal position */
+    width: 50px; /* Kích thước phù hợp hơn */
+    height: 100px;
+    background-image: url("images/torch.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    z-index: 5;
+}
+
+.obstacle {
+    position: absolute;
+    bottom: 70px; /* Sit on the "ground" */
+    left: 300px;   /* Adjust horizontal position */
+    width: 70px; /* Kích thước phù hợp hơn */
+    height: 70px;
+    background-image: url("images/obstacle_block.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    z-index: 1;
+}
+
+.potion {
+    position: absolute;
+    bottom: 100px; /* Slightly above ground */
+    right: 200px;   /* Adjust horizontal position */
+    width: 40px; /* Kích thước phù hợp hơn */
+    height: 50px;
+    background-image: url("images/potion.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    z-index: 2;
+}
+
+
+.puzzle-controls-container { /* Phần giải đố và điều khiển bên phải */
+    width: 30%; /* Chiếm 30% còn lại */
+    padding: 25px; /* Padding lớn hơn */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    box-sizing: border-box; /* Quan trọng để padding không làm tràn width */
+}
+
+.puzzle-controls-container h1 {
+    color: #ffd700;
+    font-size: 2em; /* To hơn một chút */
+    margin-bottom: 20px;
+}
+
+.timer {
+    font-size: 2.8em; /* Lớn hơn */
+    font-weight: bold;
+    color: #00ff00;
+    margin-bottom: 25px;
+    background-color: #444;
+    padding: 12px 25px; /* Padding lớn hơn */
+    border-radius: 10px;
+    min-width: 180px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Bóng xanh lá */
+}
+
+.timer.time-low {
+    color: #ffcc00;
+    animation: pulse-orange 1s infinite alternate; /* Hiệu ứng nhấp nháy */
+}
+
+.timer.time-up {
+    color: #ff0000;
+    animation: pulse-red 1s infinite alternate; /* Hiệu ứng nhấp nháy */
+}
+
+@keyframes pulse-orange {
+    from { box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
+    to { box-shadow: 0 0 20px rgba(255, 204, 0, 0.9); }
+}
+
+@keyframes pulse-red {
+    from { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+    to { box-shadow: 0 0 20px rgba(255, 0, 0, 0.9); }
+}
+
+
+.puzzle-description {
+    font-size: 1.15em;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    max-width: 100%; /* Cho phép chiếm toàn bộ chiều rộng của cột */
+}
+
+.input-section {
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.input-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.input-section input[type="text"] {
+    width: 90%; /* Chiếm phần lớn chiều rộng */
+    padding: 13px; /* Padding lớn hơn */
+    border: 1px solid #777;
+    border-radius: 8px;
+    background-color: #3e3e3e;
+    color: #eee;
+    font-size: 1.1em;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.input-section input[type="text"]:focus {
+    outline: none;
+    border-color: #00aaff;
+    box-shadow: 0 0 8px rgba(0, 170, 255, 0.7);
+}
+
+.input-section button[type="submit"] {
+    padding: 14px 35px; /* Lớn hơn */
+    font-size: 1.2em;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.input-section button[type="submit"]:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.input-section button[type="submit"]:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.input-section button[type="submit"]:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.hint-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.hint-button:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+}
+.hint-button:active {
+    transform: translateY(1px);
+}
+
+.next-level-button, .game-complete-button { /* Nút tiến lên màn tiếp theo / hoàn thành game */
+    display: inline-block;
+    padding: 14px 30px;
+    margin-top: 25px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.next-level-button:hover, .game-complete-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+.next-level-button:active, .game-complete-button:active {
+    transform: translateY(1px);
+}
+
+
+.controls.game-2d-controls {
+    margin-top: auto; /* Đẩy xuống dưới cùng của puzzle-controls-container */
+    background-color: #444;
+    padding: 20px; /* Padding lớn hơn */
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: fit-content;
+    display: flex;
+    flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
+    justify-content: center;
+    gap: 12px; /* Khoảng cách giữa các nút */
+}
+
+.controls.game-2d-controls button {
+    padding: 14px 28px; /* Lớn hơn */
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #6f42c1; /* Tím */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.controls.game-2d-controls button:hover {
+    background-color: #5f34a8;
+    transform: translateY(-2px);
+}
+
+.controls.game-2d-controls button:active {
+    background-color: #552d9a;
+    transform: translateY(1px);
+}
+
+/* Auth Pages (Login/Register) */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.auth-box {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 480px; /* Rộng hơn một chút */
+    width: 90%;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    text-align: center;
+}
+
+.auth-box h2 {
+    font-size: 2.8em; /* To hơn */
+    margin-bottom: 35px;
+    color: #4CAF50;
+    text-shadow: 3px 3px 5px rgba(0,0,0,0.8);
+}
+
+.form-group {
+    margin-bottom: 25px; /* Khoảng cách lớn hơn */
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #fbd38d;
+    font-size: 1.1em;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="text"] { /* Thêm input type text cho register */
+    width: calc(100% - 24px); /* account for padding and border */
+    padding: 12px; /* Padding lớn hơn */
+    border-radius: 8px;
+    border: 1px solid #777;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 1.05em;
+}
+
+.auth-button {
+    display: block;
+    width: 100%;
+    padding: 16px; /* Lớn hơn */
+    font-size: 1.3em; /* To hơn */
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 25px;
+    font-weight: bold;
+}
+
+.auth-button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+.auth-button:active {
+    transform: translateY(1px);
+}
+
+.auth-link {
+    display: block;
+    margin-top: 25px;
+    color: #fbd38d;
+    text-decoration: none;
+    font-size: 1.1em; /* To hơn */
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: #fff;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .game-wrapper {
+        flex-direction: column; /* Xếp chồng trên màn hình trung bình */
+        max-width: 95vw;
+    }
+    #game-container {
+        width: 100%;
+        height: 500px; /* Giảm chiều cao game 2D */
+        border-right: none;
+        border-bottom: 3px solid #555;
+    }
+    .puzzle-controls-container {
+        width: 100%; /* Chiếm toàn bộ chiều rộng khi xếp chồng */
+        padding: 20px;
+    }
+    .controls.game-2d-controls {
+        flex-wrap: wrap; /* Cho phép các nút xuống dòng */
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+    .main-button {
+        font-size: 1.3rem;
+        padding: 1rem 2.5rem;
+    }
+    .top-right-settings-button {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+        top: 1rem;
+        right: 1rem;
+    }
+    .settings-modal {
+        padding: 2rem;
+    }
+    .settings-modal-header h2 {
+        font-size: 1.8rem;
+    }
+    .close-settings-button {
+        font-size: 2rem;
+    }
+    .level-item {
+        width: 180px;
+        padding: 20px;
+    }
+    .level-item h3 {
+        font-size: 1.4em;
+    }
+    .timer {
+        font-size: 2em;
+        padding: 10px 20px;
+    }
+    .puzzle-controls-container h1 {
+        font-size: 1.8em;
+    }
+    .input-section input[type="text"] {
+        padding: 10px;
+    }
+    .input-section button[type="submit"] {
+        padding: 12px 25px;
+        font-size: 1.1em;
+    }
+    .hint-button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+    .next-level-button, .game-complete-button {
+        padding: 12px 25px;
+        font-size: 1.1em;
+    }
+    .controls.game-2d-controls button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+    #game-container {
+        height: 350px; /* Giảm chiều cao hơn nữa trên màn hình nhỏ */
+    }
+}
+
+@media (max-width: 480px) {
+    .game-content, .auth-box {
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .game-title {
+        font-size: 2rem;
+    }
+    p {
+        font-size: 1em;
+    }
+    .main-button {
+        font-size: 1.1rem;
+        padding: 0.8rem 2rem;
+    }
+    .settings-modal {
+        padding: 1.5rem;
+    }
+    .settings-modal-header h2 {
+        font-size: 1.5rem;
+    }
+    .close-settings-button {
+        font-size: 1.8rem;
+    }
+    .level-item {
+        width: 90%; /* Cho mỗi level item chiếm gần hết chiều rộng */
+        max-width: 250px; /* Giới hạn để không quá to */
+    }
+    .level-item h3 {
+        font-size: 1.3em;
+    }
+    .timer {
+        font-size: 1.8em;
+    }
+    .input-section input[type="text"] {
+        width: 95%;
+    }
+    .auth-box h2 {
+        font-size: 2em;
+    }
+    .form-group input {
+        width: calc(100% - 20px);
+        padding: 8px;
+    }
+    .auth-button {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+}

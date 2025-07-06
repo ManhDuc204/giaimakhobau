@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn chơi 04 - Giải mã kho báu</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark background */
+            color: #e2e8f0; /* Light text */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        /* Game container styling */
+        .game-container {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #63b3ed; /* Blue title color */
+            margin-bottom: 1.5rem;
+        }
+
+        /* Countdown Timer Styles */
+        .countdown-timer {
+            font-size: 1.8rem; /* Larger size for the timer */
+            font-weight: 700;
+            color: #f6ad55; /* Orange-yellow for visibility */
+            margin-bottom: 1.5rem; /* Spacing below */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .countdown-timer.time-low {
+            color: #e53e3e; /* Red when time is low */
+            animation: pulse 1s infinite; /* Pulsing effect */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .puzzle-description {
+            font-size: 1.125rem;
+            color: #cbd5e0;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Input field and label styling */
+        .input-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .input-group input {
+            width: 80%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4a5568;
+            background-color: #2d3748;
+            color: #e2e8f0;
+            outline: none;
+            transition: border-color 0.3s ease;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            border-color: #63b3ed; /* Highlight on focus */
+        }
+
+        /* Button styling */
+        .submit-button {
+            background-color: #48bb78; /* Green */
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            background-color: #38a169;
+        }
+
+        .hint-button {
+            background-color: #ecc94b; /* Yellow for hint */
+            color: #2d3748;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .hint-button:hover {
+            background-color: #d69e2e;
+        }
+
+        .nav-buttons {
+            margin-top: 2.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background-color: #4299e1; /* Blue */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-button:hover {
+            background-color: #3182ce;
+        }
+
+        /* Message displays */
+        .message {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .message.success {
+            background-color: #2f855a;
+            color: white;
+            animation: fadeInOut 5s forwards; /* Add fade in/out animation */
+        }
+
+        .message.error {
+            background-color: #c53030;
+            color: white;
+        }
+
+        /* Flask flash message specific styles */
+        .message.warning {
+            background-color: #d69e2e;
+            color: white;
+        }
+
+        .message.info {
+            background-color: #4299e1;
+            color: white;
+        }
+
+        /* Hint and solution sections */
+        .hint-text {
+            color: #a0aec0;
+            font-style: italic;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .solution-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #3a5363; /* Slightly lighter dark blue for solution box */
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Success state styling */
+        .completed-message {
+            background-color: #2f855a; /* Green */
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Utility for hiding elements */
+        .hidden {
+            display: none;
+        }
+
+        /* Styles for Flask flash message container */
+        .flashes {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: auto;
+            min-width: 200px;
+            max-width: 80%;
+            text-align: center;
+            z-index: 1000; /* Ensure it's on top */
+        }
+
+        .flashes li {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            opacity: 0; /* Start hidden for animation */
+            animation: fadeInMessage 0.5s forwards, fadeOutMessage 0.5s 4.5s forwards; /* Fade in, stay, fade out */
+        }
+
+        /* Keyframe animations */
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInMessage {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOutMessage {
+            from { opacity: 1; }
+            to { opacity: 0; display: none; } /* Use display: none at the end */
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <audio id="background-music"
+           src="{{ url_for('static', filename='audio/level_04.mp3') }}"
+           loop
+           {% if session.get('music_enabled', True) %}autoplay{% endif %}
+    ></audio>
+
+    <audio id="congrats-music"
+           src="{{ url_for('static', filename='audio/Chuc_mung.mp3') }}"
+           preload="auto"
+    ></audio>
+
+    {# Flask flash messages will appear here #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="message {{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <div class="game-container">
+        <h1 class="game-title">{{ game_title | default('Màn chơi 04') }}</h1>
+        <div id="countdown-timer" class="countdown-timer"></div> {# Thêm đồng hồ đếm ngược #}
+        <p class="puzzle-description">
+            {{ puzzle_description | safe }}
+        </p>
+
+        {# Only show the form if the answer is NOT correct #}
+        {% if not is_correct %}
+            <form id="puzzle-form" method="POST" action="{{ url_for('level_04') }}">
+                <div class="input-group">
+                    <label for="user_answer">Câu trả lời của bạn:</label>
+                    <input type="text" id="user_answer" name="user_answer" placeholder="Nhập tên đã giải mã" required>
+                </div>
+                <button type="submit" class="submit-button">Giải mã</button>
+            </form>
+        {% endif %}
+
+        {# Only display if a direct `message` variable is passed AND no Flask flashes are present, to avoid redundancy #}
+        {% if message and not messages %}
+            <div class="message {% if message_type == 'success' %}success{% else %}error{% endif %}">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        {# Only show hint/show answer buttons if the puzzle is not yet correct #}
+        {% if not is_correct %}
+            <button type="button" class="hint-button" onclick="showHint()">Gợi ý?</button>
+            <p id="hint-text" class="hint-text hidden">
+                {{ hint | default('Không có gợi ý.') }}
+            </p>
+
+            <button type="button" class="hint-button ml-2" onclick="showCorrectAnswer()">Hiện đáp án chính xác</button>
+
+            <div id="correct-answer-display" class="solution-section hidden">
+                Đáp án chính xác là: <span class="font-bold text-yellow-300">{{ correct_answer | default('Không có đáp án') }}</span>
+            </div>
+        {% endif %}
+
+        {# Display dedicated success message and next level button if correct #}
+        {% if is_correct %}
+            <div class="completed-message">
+                Chúc mừng! Bạn đã giải mã thành công! <br> Tên thật là: <span class="font-bold text-yellow-300">{{ correct_answer | default('Không xác định') }}</span>
+            </div>
+        {% endif %}
+
+        <div class="nav-buttons">
+            <a href="{{ url_for('select_level') }}" class="nav-button">Quay lại chọn cấp độ</a>
+            {# Logic for next level button. If `next_level_route` is provided, link to it.
+               Otherwise, assume it's the final level and link to 'game_complete'. #}
+            {% if is_correct %}
+                {% if next_level_route %}
+                    <a href="{{ url_for(next_level_route) }}" class="nav-button">Chuyển sang màn {{ next_level_route.split('_')[-1] }}</a>
+                {% else %}
+                    {# This is the last level, so navigate to game_complete #}
+                    <a href="{{ url_for('game_complete') }}" class="nav-button">Hoàn thành trò chơi!</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const hintText = document.getElementById('hint-text');
+        const correctAnswerDisplay = document.getElementById('correct-answer-display');
+        const puzzleForm = document.getElementById('puzzle-form');
+        const backgroundMusic = document.getElementById('background-music');
+        const congratsMusic = document.getElementById('congrats-music');
+        const hintButtons = document.querySelectorAll('.hint-button'); // Get all hint-related buttons
+        const directMessageDiv = document.querySelector('.message:not(.flashes li)'); // Target direct .message, not flash messages
+
+        // --- Countdown Timer Elements ---
+        const countdownTimerDisplay = document.getElementById('countdown-timer');
+        const submitButton = document.querySelector('.submit-button');
+        const userAnswerInput = document.getElementById('user_answer');
+
+        // --- Music Settings from Flask Session ---
+        const musicEnabled = {{ 'true' if session.get('music_enabled', True) else 'false' }};
+        const volume = {{ session.get('volume', 50) / 100 }}; // Convert from percentage (e.g., 50) to 0.0-1.0 (e.g., 0.5)
+
+        // Set initial volume for audio elements
+        if (backgroundMusic) {
+            backgroundMusic.volume = volume;
+        }
+        if (congratsMusic) {
+            congratsMusic.volume = volume;
+        }
+
+        // --- Countdown Timer Variables ---
+        let timeLeft = 120; // Default: 120 seconds (2 minutes)
+        let countdownInterval; // Variable to store the interval ID
+
+        // --- Helper Functions ---
+
+        /**
+         * Safely attempts to play an audio element.
+         * Catches and logs any errors, especially common autoplay policy blocks.
+         * @param {HTMLAudioElement} audioElement - The audio element to play.
+         * @param {string} consoleMessage - A descriptive message for console logs.
+         */
+        function playAudio(audioElement, consoleMessage) {
+            if (audioElement && musicEnabled) {
+                audioElement.play().catch(e => {
+                    console.warn(`[Audio Playback] ${consoleMessage} - Autoplay blocked or failed. User interaction required.`, e);
+                });
+            }
+        }
+
+        /**
+         * Toggles the visibility of the hint text.
+         */
+        function showHint() {
+            if (hintText) {
+                hintText.classList.toggle('hidden');
+            }
+        }
+
+        /**
+         * Shows the correct answer display and hides all hint-related buttons.
+         */
+        function showCorrectAnswer() {
+            if (correctAnswerDisplay) {
+                correctAnswerDisplay.classList.remove('hidden');
+            }
+            hintButtons.forEach(button => {
+                button.classList.add('hidden');
+            });
+        }
+
+        /**
+         * Updates the display of the countdown timer.
+         */
+        function updateCountdownDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            if (countdownTimerDisplay) {
+                countdownTimerDisplay.textContent = `Thời gian còn lại: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 30) { // Example: last 30 seconds
+                    countdownTimerDisplay.classList.add('time-low');
+                } else {
+                    countdownTimerDisplay.classList.remove('time-low');
+                }
+            }
+        }
+
+        /**
+         * Starts the countdown timer.
+         */
+        function startCountdown() {
+            // Clear any existing interval to prevent duplicates
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            // Only start if the puzzle hasn't been solved yet
+            if (!{{ is_correct | tojson }}) {
+                updateCountdownDisplay(); // Update immediately on start
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    updateCountdownDisplay();
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        handleTimeUp();
+                    }
+                }, 1000); // Update every 1 second (1000ms)
+            } else {
+                // If already correct, hide the timer
+                if (countdownTimerDisplay) {
+                    countdownTimerDisplay.style.display = 'none';
+                }
+            }
+        }
+
+        /**
+         * Handles the actions when the countdown timer reaches zero.
+         */
+        function handleTimeUp() {
+            if (countdownTimerDisplay) {
+                countdownTimerDisplay.textContent = "Hết giờ! Hãy thử lại.";
+                countdownTimerDisplay.classList.add('time-low'); // Keep styling for time low
+            }
+            // Disable input and submit button
+            if (userAnswerInput) {
+                userAnswerInput.disabled = true;
+                userAnswerInput.placeholder = "Hết giờ!";
+            }
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Hết giờ!";
+                submitButton.style.backgroundColor = '#718096'; // Grey out
+                submitButton.style.cursor = 'not-allowed';
+            }
+        }
+
+
+        /**
+         * Client-side logic to hide the puzzle form and hint/answer buttons
+         * and show the correct answer display if the puzzle is already solved
+         * (determined by `is_correct` variable from Flask).
+         */
+        function initializePageBasedOnCorrectness() {
+            // `{{ is_correct | tojson }}` will be `true` or `false`
+            if ({{ is_correct | tojson }}) {
+                if (puzzleForm) {
+                    puzzleForm.classList.add('hidden');
+                }
+                hintButtons.forEach(button => {
+                    button.classList.add('hidden');
+                });
+                if (hintText) { // Also hide the hint text itself if it was shown
+                    hintText.classList.add('hidden');
+                }
+                if (correctAnswerDisplay) {
+                    correctAnswerDisplay.classList.remove('hidden'); // Ensure solution is visible
+                }
+                // Stop the countdown if already correct
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+                if (countdownTimerDisplay) {
+                    countdownTimerDisplay.style.display = 'none';
+                }
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Executes when the HTML document has been completely loaded and parsed.
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial setup based on puzzle correctness
+            initializePageBasedOnCorrectness();
+
+            // Attempt to play background music immediately if enabled
+            playAudio(backgroundMusic, 'Background music');
+
+            // Start the countdown timer
+            startCountdown();
+
+            // Logic to play congratulations music when the answer is correct
+            // `{{ is_correct | tojson }}` will be true or false from Flask
+            if ({{ is_correct | tojson }} && musicEnabled) {
+                // Pause and reset background music before playing congrats music
+                if (backgroundMusic && !backgroundMusic.paused) {
+                    backgroundMusic.pause();
+                    backgroundMusic.currentTime = 0;
+                }
+
+                playAudio(congratsMusic, 'Congratulations music');
+
+                // When congrats music ends, resume background music
+                if (congratsMusic) {
+                    congratsMusic.onended = () => {
+                        playAudio(backgroundMusic, 'Resuming background music');
+                    };
+                }
+            }
+
+            // Auto-hide the general `message` div (if it exists and is not a Flask flash message)
+            if (directMessageDiv && (directMessageDiv.classList.contains('success') || directMessageDiv.classList.contains('error'))) {
+                // The fadeInOut animation handles display: none at the end for success.
+                // For error, we manually hide after a delay.
+                if (directMessageDiv.classList.contains('error')) {
+                    setTimeout(() => {
+                        directMessageDiv.style.display = 'none';
+                    }, 5000); // Hide after 5 seconds if it's an error message
+                }
+            }
+        });
+
+        // Add submit event listener to the form to stop the countdown when user submits an answer
+        if (puzzleForm) {
+            puzzleForm.addEventListener('submit', () => {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+            });
+        }
+
+        // Ensures all music stops and resets when the user navigates away from the page
+        window.addEventListener('beforeunload', () => {
+            if (backgroundMusic) {
+                backgroundMusic.pause();
+                backgroundMusic.currentTime = 0;
+            }
+            if (congratsMusic) {
+                congratsMusic.pause();
+                congratsMusic.currentTime = 0;
+            }
+            // Also clear countdown interval if user leaves the page
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+    </script>
+</body>
+</html>
